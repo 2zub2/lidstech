@@ -1,0 +1,12 @@
+{
+    "require": {
+        "spatie/async": "^1.4",
+        "symfony/process": "^4.4",
+        "vladimir163/lead-generator": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+          "App\\": "app"
+        }
+    }
+}
