@@ -32,7 +32,7 @@ class PoolTimeConstraint extends Pool
             foreach ($this->inProgress as $process) {
                 // останавливаем уже запущенные процессы если пул остановлен
                 if ($this->stopped) {
-                    $process->stop();
+                    @$process->stop();
                     continue;
                 }
 

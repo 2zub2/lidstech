@@ -4,6 +4,7 @@ namespace App\console;
 use App\components\LeadProcessor;
 use App\components\LeadResult;
 
+use App\components\LeadResultInterface;
 use App\components\Logger;
 use App\components\PoolTimeConstraint;
 use LeadGenerator\Generator;
@@ -44,8 +45,11 @@ class App
             // добавляем обработку лида в пул
             $pool->add(function () use ($lead) {
                 return LeadProcessor::getInstance()->process($lead);
-            })->then(function (LeadResult $output) {
-                App::$logger->writeLine($output->toString());
+            })->then(function ($output) {
+                // условие в связи с особенностью реализации Spatie\Async\Process\ProcessCallback
+                if ($output instanceof LeadResultInterface) {
+                    App::$logger->writeLine($output->toString());
+                }
             })->catch(function (\Throwable $exception) {
                 file_put_contents('runtime/errors.txt', $exception->getMessage());
             })->timeout(function () {
