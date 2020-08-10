@@ -15,8 +15,9 @@ class PoolTimeConstraint extends Pool
 {
     /**
      * @var int
+     * маскимальное время выполнения 10 минут
      */
-    public $timeConstraint = 60;
+    public $timeConstraint = 60 * 60;
 
     /**
      * переопределяем метод для поддержки ограничения по общему времени ожидания исполнения процессов
