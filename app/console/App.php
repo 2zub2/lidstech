@@ -16,6 +16,9 @@ use LeadGenerator\Lead;
  */
 class App
 {
+    public static $leadsNum;
+    public static $timeout;
+
     /**
      * @var Logger
      */
@@ -24,8 +27,10 @@ class App
     /**
      * App constructor.
      */
-    public function __construct()
+    public function __construct(array $config)
     {
+        self::$leadsNum = $config['leadsNum'] ? $config['leadsNum'] : 10000;
+        self::$timeout = $config['timeout'] ? $config['timeout'] : 60 * 10;
         self::$logger = Logger::getInstance();
     }
 
@@ -41,7 +46,7 @@ class App
 
         $executionStartTime = microtime(true);
 
-        $generator->generateLeads(10000, function (Lead $lead) use ($pool) {
+        $generator->generateLeads(App::$leadsNum, function (Lead $lead) use ($pool) {
             // добавляем обработку лида в пул
             $pool->add(function () use ($lead) {
                 return LeadProcessor::getInstance()->process($lead);
@@ -62,6 +67,8 @@ class App
         $executionEndTime = microtime(true);
 
         $executionTime = $executionEndTime - $executionStartTime;
+
+        echo $pool->status() . PHP_EOL;
 
         echo "completed in {$executionTime} seconds" . PHP_EOL;
 

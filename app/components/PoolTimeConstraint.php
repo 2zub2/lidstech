@@ -4,6 +4,7 @@
 namespace App\components;
 
 
+use App\console\App;
 use Spatie\Async\Pool;
 use Spatie\Async\Process\SynchronousProcess;
 
@@ -17,7 +18,16 @@ class PoolTimeConstraint extends Pool
      * @var int
      * маскимальное время выполнения 10 минут
      */
-    public $timeConstraint = 60 * 10;
+    public $timeConstraint;
+
+    /**
+     * PoolTimeConstraint constructor.
+     */
+    public function __construct()
+    {
+        $this->timeConstraint = App::$timeout;
+        parent::__construct();
+    }
 
     /**
      * переопределяем метод для поддержки ограничения по общему времени ожидания исполнения процессов
@@ -32,7 +42,7 @@ class PoolTimeConstraint extends Pool
             foreach ($this->inProgress as $process) {
                 // останавливаем уже запущенные процессы если пул остановлен
                 if ($this->stopped) {
-                    @$process->stop();
+                    $this->markAsTimedOut($process);
                     continue;
                 }
 

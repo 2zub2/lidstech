@@ -7,6 +7,9 @@ if (!\Spatie\Async\Pool::isSupported()) {
     throw new \Exception('Unsupported async');
 }
 
-(new \App\console\App())->run();
+(new \App\console\App([
+    'leadsNum' => getenv('LEADS_NUM'),
+    'timeout'  => getenv('TIMEOUT'),
+]))->run();
 
 
