@@ -27,6 +27,7 @@ class PoolTimeConstraint extends Pool
     {
         $this->timeConstraint = App::$timeout;
         parent::__construct();
+        $this->status = new PoolStatusShort($this);
     }
 
     /**

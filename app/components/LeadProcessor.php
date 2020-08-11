@@ -26,22 +26,6 @@ class LeadProcessor
      */
     private function __construct()
     {
-        // рандомно берем категории заявок которые не обработаываются
-        $this->restrictedCategory = array_flip(
-            array_rand([
-                'Buy auto',
-                'Buy house',
-                'Get loan',
-                'Cleaning',
-                'Learning',
-                'Car wash',
-                'Repair smth',
-                'Barbershop',
-                'Pizza',
-                'Car insurance',
-                'Life insurance'
-            ], 3)
-        );
     }
 
     /**
@@ -58,13 +42,14 @@ class LeadProcessor
 
     /**
      * @param Lead $lead
+     * @param array $restrictedCategory
      * @return LeadResultInterface
      * @throws \Exception
      */
-    public function process(Lead $lead) : LeadResultInterface
+    public function process(Lead $lead, $restrictedCategory = []) : LeadResultInterface
     {
         // проеряем по категории можно ли обработать заявку
-        if (!in_array($lead->categoryName, $this->restrictedCategory)) {
+        if (in_array($lead->categoryName, $restrictedCategory)) {
             throw new \Exception('Restricted category');
         }
 

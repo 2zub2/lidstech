@@ -19,6 +19,7 @@ class App
     public static $leadsNum;
     public static $timeout;
 
+    public static $restrictedCategory;
     /**
      * @var Logger
      */
@@ -32,6 +33,21 @@ class App
         self::$leadsNum = $config['leadsNum'] ? $config['leadsNum'] : 10000;
         self::$timeout = $config['timeout'] ? $config['timeout'] : 60 * 10;
         self::$logger = Logger::getInstance();
+
+        // рандомно берем категории заявок которые не обработаываются
+        self::$restrictedCategory = array_rand(array_flip([
+            'Buy auto',
+            'Buy house',
+            'Get loan',
+            'Cleaning',
+            'Learning',
+            'Car wash',
+            'Repair smth',
+            'Barbershop',
+            'Pizza',
+            'Car insurance',
+            'Life insurance'
+        ]), 3);
     }
 
     /**
@@ -43,22 +59,25 @@ class App
 
         // создаем асинхронный пул
         $pool = PoolTimeConstraint::create();
+        // обработка в 60 потоках
+        $pool->concurrency(60);
 
         $executionStartTime = microtime(true);
 
         $generator->generateLeads(App::$leadsNum, function (Lead $lead) use ($pool) {
+            $restrictedCategories = App::$restrictedCategory;
             // добавляем обработку лида в пул
-            $pool->add(function () use ($lead) {
-                return LeadProcessor::getInstance()->process($lead);
+            $pool->add(function () use ($lead, $restrictedCategories) {
+                return LeadProcessor::getInstance()->process($lead, $restrictedCategories);
             })->then(function ($output) {
                 // условие в связи с особенностью реализации Spatie\Async\Process\ProcessCallback
                 if ($output instanceof LeadResultInterface) {
                     App::$logger->writeLine($output->toString());
                 }
             })->catch(function (\Throwable $exception) {
-                file_put_contents('runtime/errors.txt', $exception->getMessage());
+                //file_put_contents('runtime/errors.txt', $exception->getMessage(), FILE_APPEND);
             })->timeout(function () {
-                file_put_contents('runtime/errors.txt', 'timeout');
+                //file_put_contents('runtime/errors.txt', 'timeout');
             });
         });
 
