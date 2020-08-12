@@ -50,7 +50,7 @@ class LeadProcessor
     {
         // проеряем по категории можно ли обработать заявку
         if (in_array($lead->categoryName, $restrictedCategory)) {
-            throw new \Exception('Restricted category');
+            throw new \Exception('Restricted category,' . $lead->categoryName . ',' . $lead->id);
         }
 
         // обработчик засыпает

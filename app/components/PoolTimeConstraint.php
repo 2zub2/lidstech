@@ -6,6 +6,7 @@ namespace App\components;
 
 use App\console\App;
 use Spatie\Async\Pool;
+use Spatie\Async\Process\Runnable;
 use Spatie\Async\Process\SynchronousProcess;
 
 /**
@@ -75,5 +76,16 @@ class PoolTimeConstraint extends Pool
         }
 
         return $this->results;
+    }
+
+    /**
+     * @param callable|Runnable $process
+     * @param int|null $outputLength
+     * @return Runnable
+     */
+    public function add($process, ?int $outputLength = null): Runnable
+    {
+        usleep(10000);
+        return parent::add($process, $outputLength);
     }
 }

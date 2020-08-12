@@ -75,9 +75,9 @@ class App
                     App::$logger->writeLine($output->toString());
                 }
             })->catch(function (\Throwable $exception) {
-                //file_put_contents('runtime/errors.txt', $exception->getMessage(), FILE_APPEND);
+                //file_put_contents('runtime/errors.txt', $exception->getCode(), FILE_APPEND);
             })->timeout(function () {
-                //file_put_contents('runtime/errors.txt', 'timeout');
+                //file_put_contents('runtime/errors.txt', 'timeout', FILE_APPEND);
             });
         });
 
